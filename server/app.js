@@ -27,19 +27,19 @@ const db = {
 const dbPool = require('mysql').createPool(db);
 
 
-app.post('/api/login', async (req, res) => {
+app.post('/api/login', async (request, res) => {
 
 });
 
-app.post('/api/logout', async (req, res) => {
+app.post('/api/logout', async (request, res) => {
 
 });
 
 const sql = require('./sql')
 
-app.post('/api/:alias', async (req, res) => {
+app.post('/api/:alias', async (request, res) => {
     try {
-        res.send(await req.db(req.params.alias))
+        res.send(await req.db(request.params.alias))
     } catch (err) {
         res.status(500).send({
             error: err
