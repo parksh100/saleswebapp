@@ -7,7 +7,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: true,
+        secure: false,
         maxAge: 1000 * 60 * 60 //쿠키 유효시간 1시간
     }
 }));
@@ -28,16 +28,34 @@ const dbPool = require('mysql').createPool(db);
 
 
 app.post('/api/login', async (request, res) => {
-
+    request.session['email'] = 'parksh@kaicert.com'
+    res.send('ok')
 });
 
 app.post('/api/logout', async (request, res) => {
-
+    request.session.destroy();
+    res.send('ok');
 });
+
+
 
 const sql = require('./sql')
 
+app.post('/apirole/:alias', async (request, res) => {
+    try {
+        res.send(await req.db(request.params.alias))
+    } catch (err) {
+        res.status(500).send({
+            error: err
+        });
+    }
+});
+
 app.post('/api/:alias', async (request, res) => {
+    if (!request.session.email) {
+        return res.status(401).send({ error: 'You need to login.' })
+    }
+
     try {
         res.send(await req.db(request.params.alias))
     } catch (err) {
