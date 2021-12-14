@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const session = require('express-session');
+const fs = require('fs');
 
 app.use(session({
     secret: 'secret code',
@@ -14,7 +15,15 @@ app.use(session({
 
 const server = app.listen(3000, () => {
     console.log('Server started. port:3000')
-})
+});
+
+let sql = require('./sql')
+
+fs.watchFile(__dirname + '/sql.js', (curr, prev) => {
+    console.log('sql 변경 시 재시작 없이 반영되도록 함.');
+    delete require.cache[require.resolve('./sql.js')];
+    sql = require('./sql.js')
+});
 
 const db = {
     database: "dev",
@@ -39,7 +48,7 @@ app.post('/api/logout', async (request, res) => {
 
 
 
-const sql = require('./sql')
+
 
 app.post('/api/:alias', async (request, res) => {
     try {
