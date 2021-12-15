@@ -22,7 +22,10 @@
               class="card"
               style="width: 18rem;"
             >
-              <a @click="goToDetail (product.id)">
+              <a
+                @click="goToDetail (product.id)"
+                style="cursor:pointer"
+              >
                 <img
                   :src="product.path"
                   class="card-img-top"
