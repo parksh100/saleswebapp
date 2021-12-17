@@ -34,8 +34,8 @@
               <div class="card-body">
                 <h5 class="card-title">{{product.product_name}}</h5>
                 <p class="card-text">
-                  <span class="badge bg-dark">{{product.category1}}</span>
-                  <span class="badge bg-dark">{{product.category2}}</span>
+                  <span class="badge bg-dark me-1">{{product.category1}}</span>
+                  <span class="badge bg-dark me-1">{{product.category2}}</span>
                   <span class="badge bg-dark">{{product.category3}}</span>
                 </p>
                 <div class="d-flex justify-content-between align-items-center">
