@@ -32,7 +32,7 @@ fs.watchFile(__dirname + '/sql.js', (curr, prev) => {
 const db = {
     database: "dev",
     connectionLimit: 10,
-    host: "192.168.176.1",
+    host: "127.0.0.1",
     user: "root",
     password: "mariadb"
 }
@@ -70,7 +70,7 @@ app.post('/apirole/:alias', async (request, res) => {
     }
 
     try {
-        res.send(await req.db(request.params.alias, request.body.param))
+        res.send(await req.db(request.params.alias))
     } catch (err) {
         res.status(500).send({
             error: err
