@@ -18,6 +18,10 @@ module.exports = {
     productInsert: {
         query: `insert into t_product (product_name, product_price, delivery_price, add_deliver_price,tags, outbound_days, seller_id, category_id )
          values(?,?,?,?,?,?,?,?)`
+    },
+    productImageInsert: {
+        query: `insert into t_image (product_id, type, path)
+        values(?,?,?)`
     }
 
 }
