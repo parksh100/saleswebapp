@@ -44,7 +44,7 @@
             <li class="nav-item">
               <router-link
                 class="nav-link"
-                to="create"
+                to="/create"
               >제품등록페이지</router-link>
             </li>
           </ul>
