@@ -41,9 +41,22 @@ const dbPool = require('mysql').createPool(db);
 
 
 app.post('/api/login', async (request, res) => {
-    request.session['email'] = 'parksh@kaicert.com'
-    res.send('ok')
-});
+    // request.session['email'] = 'parksh@kaicert.com'
+    // res.send('ok')
+    try {
+        await req.db('signUp', request.body.param);
+        if (request.body.param.length > 0) {
+            for (let key in request.body.param[0]) request.session[key] = request.body.param[0][key];
+            res.send(request.body.param[0]);
+        } else {
+            res.send({ err: "Please try again or contact system manager." })
+        }
+    } catch (err) {
+        res.send({
+            error: 'DB access error'
+        });
+    }
+)};
 
 app.post('/api/logout', async (request, res) => {
     request.session.destroy();

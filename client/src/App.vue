@@ -47,6 +47,13 @@
                 to="/create"
               >제품등록페이지</router-link>
             </li>
+            <li>
+              <button
+                class="btn btn-primary"
+                type="button"
+                @click="kakaoLogin"
+              >로그인</button>
+            </li>
           </ul>
 
           <form class="d-flex">
@@ -189,26 +196,39 @@
 
   </div>
 </template>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+<script>
+export default {
+  methods: {
+    kakaoLogin () {
+      window.Kakao.Auth.login({
+        scope: 'profile_nickname,account_email,gender',
+        success: this.getProfile
+      });
+    },
+    getProfile (authObj) {
+      console.log(authObj);
+      window.Kakao.API.request({
+        url: '/v2/user/me',
+        success: res => {
+          const kakao_account = res.kakao_account;
+          console.log(kakao_account);
+          this.login(kakao_account);
+          alert('로그인 성공!')
+        }
+      })
+    },
+    async login (kakao_account) {
+      await this.$api('/api/login', {
+        param: [
+          { email: kakao_account.email, nickname: kakao_account.profile.nickname },
+          { nickname: kakao_account.profile.nickname }
+        ]
+      })
+    }
+  }
 }
 
-#nav {
-  padding: 30px;
-}
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
+</script>
 
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+
