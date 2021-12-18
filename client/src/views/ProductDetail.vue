@@ -24,23 +24,13 @@
               ></li>
             </ol>
             <div class="carousel-inner">
-              <div class="carousel-item active">
+              <div
+                :class="`carousel-item ${i==0 ? 'active':''}`"
+                v-for="(pimg, i) in productImage"
+                :key="i"
+              >
                 <img
-                  src="http://earlyadopter.godohosting.com/goods_earlyadopter_godo_co_kr/162/1578368250170m0.jpg?cache_ver=202012274"
-                  class="d-block w-100"
-                  alt="..."
-                >
-              </div>
-              <div class="carousel-item">
-                <img
-                  src="http://earlyadopter.godohosting.com/goods_earlyadopter_godo_co_kr/162/1578368250813m2.jpg?cache_ver=202012274"
-                  class="d-block w-100"
-                  alt="..."
-                >
-              </div>
-              <div class="carousel-item">
-                <img
-                  src="http://earlyadopter.godohosting.com/goods_earlyadopter_godo_co_kr/162/1578368250328m4.jpg?cache_ver=202012274"
+                  :src="pimg.path"
                   class="d-block w-100"
                   alt="..."
                 >
@@ -75,15 +65,15 @@
         <div class="col-md-7">
           <div class="card shadow-sm">
             <div class="card-body">
-              <h5 class="card-title">K70 RGB MK.2 BROWN 기계식 게이밍 키보드 갈축</h5>
-              <h5 class="card-title pt-3 pb-3 border-top">219,000원</h5>
+              <h5 class="card-title">{{productDetail.product_name}}</h5>
+              <h5 class="card-title pt-3 pb-3 border-top">{{getCurrencyFormat(productDetail.product_price)}}원</h5>
               <p class="card-text border-top pt-3">
-                <span class="badge bg-dark">전자제품</span>
-                <span class="badge bg-dark">컴퓨터</span>
-                <span class="badge bg-dark">악세사리</span>
+                <span class="badge bg-dark">{{productDetail.category1}}</span>
+                <span class="badge bg-dark">{{productDetail.category2}}</span>
+                <span class="badge bg-dark">{{productDetail.category3}}</span>
               </p>
               <p class="card-text pb-3">
-                배송비 2,500원 | 도서산간(제주도) 배송비 추가 5,000원 | 택배배송 | 5일 이내 출고 (주말,공휴일 제외)
+                배송비 {{getCurrencyFormat(productDetail.delivery_price)}}원 | 도서산간(제주도) 배송비 추가 {{getCurrencyFormat(productDetail.add_delivery_price)}}원 | 택배배송 | {{productDetail.outbound_days}}일 이내 출고 (주말,공휴일 제외)
               </p>
               <div class="card-text border-top pb-3">
                 <div class="row">
@@ -92,14 +82,22 @@
                   </div>
                   <div class="col-auto">
                     <div class="input-group">
-                      <span class="input-group-text">-</span>
+                      <span
+                        class="input-group-text"
+                        style="cursor:pointer"
+                        @click="calculatePrice(-1)"
+                      >-</span>
                       <input
                         type="text"
                         class="form-control"
                         style="width:40px;"
-                        value="1"
+                        v-model="total"
                       >
-                      <span class="input-group-text">+</span>
+                      <span
+                        class="input-group-text"
+                        style="cursor:pointer"
+                        @click="calculatePrice(+1)"
+                      >+</span>
                     </div>
                   </div>
                 </div>
@@ -112,7 +110,7 @@
                   class="col-6"
                   style="text-align: right;"
                 >
-                  <h3>219,000</h3>
+                  <h3>{{getCurrencyFormat(totalPrice)}}원</h3>
                 </div>
               </div>
               <div class="d-flex justify-content-between align-items-center">
@@ -137,7 +135,7 @@
       <div class="row">
         <div class="col-12">
           <img
-            src="http://earlyadopter.godohosting.com/goods_earlyadopter_godo_co_kr/162/0ac90345448ccd5c.jpg"
+            :src="productDetail.path"
             class="img-fluid"
           />
         </div>
@@ -151,8 +149,10 @@ export default {
   data () {
     return {
       productId: 0,
-      productDetail: [],
-      productImage: []
+      productDetail: {},
+      productImage: [],
+      total: 1,
+      totalPrice: 0
     };
   }
   ,
@@ -163,13 +163,26 @@ export default {
 
   },
   methods: {
+    calculatePrice (cnt) {
+      let total = this.total + cnt;
+      if (total < 1) total = 1;
+      this.total = total;
+      this.totalPrice = this.productDetail.product_price * this.total;
+    },
+    getCurrencyFormat (value) {
+      return this.$currencyFormat(value);
+    },
+
     async getProductDetail () {
-      this.productList = await this.$api('/api/productDetail', { param: [this.productId] });
-      console.log(this.productList)
+      let productDetail = await this.$api('/api/productDetail', { param: [this.productId] });
+      if (productDetail.length > 0) {
+        this.productDetail = productDetail[0];
+        this.totalPrice = this.totalPrice = this.productDetail.product_price * this.total;
+      }
     },
     async getProductImage () {
-      this.ProductImage = await this.$api('/api/productMainImages', { param: [this.productId] });
-      console.log(this.productList)
+      this.productImage = await this.$api('/api/productMainImages', { param: [this.productId] });
+      console.log('this.productImage', this.productImage)
     },
 
   }
