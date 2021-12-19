@@ -49,14 +49,14 @@ app.post('/api/login', async (request, res) => {
             for (let key in request.body.param[0]) request.session[key] = request.body.param[0][key];
             res.send(request.body.param[0]);
         } else {
-            res.send({ err: "Please try again or contact system manager." })
+            res.send({ error: "Please try again or contact system manager." })
         }
     } catch (err) {
         res.send({
             error: 'DB access error'
         });
     }
-)};
+});
 
 app.post('/api/logout', async (request, res) => {
     request.session.destroy();
