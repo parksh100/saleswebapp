@@ -30,7 +30,7 @@
                 :key="i"
               >
                 <img
-                  :src="pimg.path"
+                  :src="`/download/${productId}/${pimg.path}`"
                   class="d-block w-100"
                   alt="..."
                 >
@@ -135,7 +135,7 @@
       <div class="row">
         <div class="col-12">
           <img
-            :src="productDetail.path"
+            :src="`/download/${productId}/${productDetail.path}`"
             class="img-fluid"
           />
         </div>

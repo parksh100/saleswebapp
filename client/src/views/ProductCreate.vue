@@ -56,18 +56,42 @@
         <div class="col-sm-9">
           <div class="row">
             <div class="col-auto">
-              <select class="form-select">
-                <option value="">전자제품</option>
+              <select
+                class="form-select"
+                v-model="cate1"
+                @change="changeCategory1"
+              >
+                <option
+                  v-for="(cate,i) in category1"
+                  :key="i"
+                  :value="cate"
+                >{{cate}}</option>
               </select>
             </div>
             <div class="col-auto">
-              <select class="form-select">
-                <option value="">컴퓨터</option>
+              <select
+                class="form-select"
+                v-model="cate2"
+                @change="changeCategory2"
+              >
+                <option
+                  v-for="(cate,i) in category2"
+                  :key="i"
+                  :value="cate"
+                >{{cate}}</option>
               </select>
             </div>
             <div class="col-auto">
-              <select class="form-select">
-                <option value="">악세사리</option>
+              <select
+                class="form-select"
+                v-model="cate3"
+                @change="changeCategory3"
+              >
+                <option
+                  v-for="(cate,i) in category3"
+                  :key="i"
+                  :value="cate"
+                >{{cate}}</option>
               </select>
             </div>
           </div>
@@ -132,12 +156,91 @@ export default {
         seller_id: 1,
         category_id: 1
 
-      }
+      },
+      categoryList: [],
+      category1: [],
+      category2: [],
+      category3: [],
+      cate1: '',
+      cate2: '',
+      cate3: ''
     }
   },
+  created () {
+    this.getCategoryList();
+  },
   methods: {
+    async getCategoryList () {
+      let categoryList = await this.$api('/api/categoryList', {});
+      this.categoryList = categoryList;
+
+      let oCategory = {};
+      categoryList.forEach(item => {
+        oCategory[item.category1] = item.id;
+      });
+
+      let category1 = [];
+      for (let key in oCategory) {
+        category1.push(key);
+      }
+
+      this.category1 = category1;
+
+      let category2 = [];
+      category2 = categoryList.filter(c => {
+        return c.category1 == category1[0];
+      });
+
+      let oCategory2 = {};
+      category2.forEach(item => {
+        oCategory2[item.category2] = item.id;
+      });
+
+      console.log(category2);
+
+      category2 = [];
+      for (let key in oCategory2) {
+        category2.push(key);
+      }
+      this.category2 = category2;
+    },
     goToList () {
       this.$router.push({ path: '/sales' });
+    },
+
+    changeCategory1 () {
+      // this.cate1
+      this.category3 = [];
+      let categoryList = this.categoryList.filter(c => {
+        return c.category1 == this.cate1;
+      });
+      let oCategory2 = {};
+      categoryList.forEach(item => {
+        oCategory2[item.category2] = item.id;
+      });
+
+      let category2 = [];
+      for (let key in oCategory2) {
+        category2.push(key);
+      }
+      this.category2 = category2;
+    },
+
+    changeCategory2 () {
+      let categoryList = this.categoryList.filter(c => {
+        return (c.category1 == this.cate1 && c.category2 == this.cate2);
+      });
+
+      let oCategory3 = {};
+      categoryList.forEach(item => {
+        oCategory3[item.category3] = item.id;
+      });
+
+      let category3 = [];
+      for (let key in oCategory3) {
+        category3.push(key);
+      }
+      this.category3 = category3;
     },
     productInsert () {
       if (this.product.product_name == "") {
@@ -153,8 +256,12 @@ export default {
       }
 
       if (this.product.outbound_days == "" || this.product.outbound_days == 0) {
-        return this.$swal("제품가격을 입력하세요.")
+        return this.$swal("출고일을 입력하세요.")
       }
+
+      this.product.category_id = this.categoryList.filter(c => {
+        return (c.category1 == this.cate1 && c.category2 == this.cate2 && c.category3 == this.cate3);
+      })[0].id;
 
       this.$swal.fire({
         title: '정말 등록하시겠습니까?',
@@ -173,6 +280,7 @@ export default {
     }
 
   },
+
   computed: {
     user () {
       return this.$store.state.user;
@@ -184,6 +292,5 @@ export default {
       this.$router.push({ path: '/' })
     }
   },
-
 }
 </script>
