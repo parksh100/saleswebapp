@@ -6,8 +6,17 @@ import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import store from './store'
 
+import VueSweetalert2 from 'vue-sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css'
 
 
-createApp(App).use(router).mixin(mixins).use(store).mount('#app');
+
+const app = createApp(App);
+app.use(router);
+app.mixin(mixins);
+app.use(store);
+app.use(VueSweetalert2);
+app.mount('#app');
+
 
 window.Kakao.init("e89f51275ae4cf28aaa597679fd80f58");

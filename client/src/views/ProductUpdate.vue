@@ -1,14 +1,14 @@
 <template>
   <div>
     <div class="container">
-      <h2 class="text-center mt-3 mb-3">제품등록</h2>
+      <h2 class="text-center mt-3 mb-3">제품수정</h2>
       <div class="mb-3 row">
         <label class="col-md-3 col-form-label">제품명</label>
         <div class="col-sm-9">
           <input
             type="text"
             class="form-control"
-            v-model="product.product_name"
+            v-model="productDetail.product_name"
           >
         </div>
       </div>
@@ -19,7 +19,7 @@
             <input
               type="number"
               class="form-control"
-              v-model="product.product_price"
+              v-model="productDetail.product_price"
             >
             <span class="input-group-text">원</span>
           </div>
@@ -32,7 +32,7 @@
             <input
               type="number"
               class="form-control"
-              v-model="product.delivery_price"
+              v-model="productDetail.delivery_price"
             >
             <span class="input-group-text">원</span>
           </div>
@@ -45,7 +45,7 @@
             <input
               type="number"
               class="form-control"
-              v-model="product.add_delivery_price"
+              v-model="productDetail.add_delivery_price"
             >
             <span class="input-group-text">원</span>
           </div>
@@ -79,7 +79,7 @@
           <input
             type="text"
             class="form-control"
-            v-model="product.tags"
+            v-model="productDetail.tags"
           >
         </div>
       </div>
@@ -90,7 +90,7 @@
             <input
               type="number"
               class="form-control"
-              v-model="product.outbound_days"
+              v-model="productDetail.outbound_days"
             >
             <span class="input-group-text">일 이내 출고</span>
           </div>
@@ -109,7 +109,6 @@
           <button
             type="button"
             class="btn btn-lg btn-danger"
-            @click="productInsert"
           >저장</button>
         </div>
       </div>
@@ -122,56 +121,26 @@
 export default {
   data () {
     return {
-      product: {
-        product_name: '',
-        product_price: 0,
-        delivery_price: 0,
-        add_delivery_price: 0,
-        tags: '',
-        outbound_days: 0,
-        seller_id: 1,
-        category_id: 1
+      productId: 0,
+      productDetail: {},
+    };
+  }
+  ,
+  created () {
+    this.productId = this.$route.query.product_id;
+    this.getProductDetail();
 
-      }
-    }
   },
   methods: {
     goToList () {
       this.$router.push({ path: '/sales' });
     },
-    productInsert () {
-      if (this.product.product_name == "") {
-        return this.$swal("제품명은 필수 입력값입니다.")
+    async getProductDetail () {
+      let productDetail = await this.$api('/api/productDetail', { param: [this.productId] });
+      if (productDetail.length > 0) {
+        this.productDetail = productDetail[0];
       }
-
-      if (this.product.product_price == "" || this.product.product_price == 0) {
-        return this.$swal("제품가격을 입력하세요.")
-      }
-
-      if (this.product.delivery_price == "" || this.product.delivery_price == 0) {
-        return this.$swal("배송료를 입력하세요.")
-      }
-
-      if (this.product.outbound_days == "" || this.product.outbound_days == 0) {
-        return this.$swal("제품가격을 입력하세요.")
-      }
-
-      this.$swal.fire({
-        title: '정말 등록하시겠습니까?',
-        showCancelButton: true,
-        confirmButtonText: '생성',
-        cancelButtonText: `취소`,
-      }).then(async (result) => {
-        /* Read more about isConfirmed, isDenied below */
-        if (result.isConfirmed) {
-          await this.$api('/api/productInsert', { param: [this.product] });
-          this.$swal.fire('저장되었습니다!', '', 'success');
-          this.$router.push({ path: '/sales' });
-
-        }
-      })
     }
-
   },
   computed: {
     user () {
@@ -184,6 +153,8 @@ export default {
       this.$router.push({ path: '/' })
     }
   },
+
+
 
 }
 </script>

@@ -47,7 +47,7 @@
             >
               <router-link
                 class="nav-link"
-                to="/create"
+                to="/sales"
               >제품등록페이지</router-link>
             </li>
             <li v-if="user.email == undefined">
